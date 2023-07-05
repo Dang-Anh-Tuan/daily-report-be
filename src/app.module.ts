@@ -1,13 +1,12 @@
-import { AuthModule } from './modules/auth/auth.module'
-import { TaskModule } from './modules/task/task.module'
-import { DailyReportModule } from './modules/daily-report/daily-report.module'
-import { UserModule } from './modules/user/user.module'
-import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
 import { databaseConfig } from '@configs/configs.contants'
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
+import { AppService } from './app.service'
+import { AuthModule } from './modules/auth/auth.module'
+import { DailyReportModule } from './modules/daily-report/daily-report.module'
+import { TaskModule } from './modules/task/task.module'
+import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [
@@ -31,7 +30,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
     TaskModule,
     AuthModule
   ],
-  controllers: [AppController],
   providers: [AppService]
 })
 export class AppModule {}

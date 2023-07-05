@@ -1,4 +1,4 @@
-import BaseRepo from '@share/utils/baseRepository'
+import BaseRepo from '@share/utils/base.repo'
 import { User } from '../entities/user.entity'
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'

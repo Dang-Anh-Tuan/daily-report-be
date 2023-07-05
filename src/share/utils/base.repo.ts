@@ -18,22 +18,28 @@ export default class BaseRepo<T extends BaseEntity> {
   }
 
   async update(condition: object, data: object): Promise<UpdateResult> {
-    const c: object = { ...condition, deleteAt: null }
+    const c: object = { deletedAt: null, ...condition }
     return this.repository.update(c, data)
   }
 
   async delete(condition: object): Promise<DeleteResult> {
-    const c: object = { ...condition, deleteAt: null }
+    const c: object = { deletedAt: null, ...condition }
     return this.repository.delete(c)
   }
 
-  async findOne(condition: object): Promise<T | undefined> {
-    const c: object = { ...condition, deleteAt: null }
-    return this.repository.findOne({ where: c })
+  async findOne(
+    condition: object,
+    withDeleted: boolean = false
+  ): Promise<T | undefined> {
+    const c: object = { deletedAt: null, ...condition }
+    return this.repository.findOne({ where: c, withDeleted: withDeleted })
   }
 
-  async getList(condition: object | object[]): Promise<T[]> {
-    const c: object = { ...condition, deleteAt: null }
-    return this.repository.find({ where: c })
+  async getList(
+    condition: object | object[],
+    withDeleted: boolean = false
+  ): Promise<T[]> {
+    const c: object = { deletedAt: null, ...condition }
+    return this.repository.find({ where: c, withDeleted: withDeleted })
   }
 }

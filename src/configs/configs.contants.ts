@@ -19,3 +19,10 @@ export const databaseConfig = {
 export const authenGoogleConfig = {
   client_id: process.env.CLIENT_ID,
 };
+
+export const jwtConfig = {
+  secret: process.env.JWT_SECRET,
+  expiresIn: process.env.JWT_EXPIRES_IN,
+  refreshExpiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+  expiresInSeconds: parseInt(process.env.JWT_EXPIRES_IN_SECONDS)
+}

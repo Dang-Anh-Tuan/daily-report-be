@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { TrimPipe } from '@share/pipe/trim-text.pipe'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { cors: true })
   
   app.setGlobalPrefix(appConfig.apiPrefix)
 
