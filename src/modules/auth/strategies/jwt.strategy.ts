@@ -1,4 +1,4 @@
-import { jwtConfig } from '@configs/configs.contants'
+import { appConfig, jwtConfig } from '@configs/configs.contants'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { MessageCode } from '@share/constants/common.constants'
@@ -23,10 +23,20 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @returns
    */
   async validate(req: any, payload: any) {
+    const url = req.originalUrl
+
+    const urlNotCatchExpired = [
+      `${appConfig.apiPrefix}/auth/logout`,
+      `${appConfig.apiPrefix}/auth/refresh`
+    ]
+
     if (!payload) {
       throw new UnauthorizedException(responseError(MessageCode.MSG_401_001))
     }
-    if (new Date(payload.exp * 1000) < new Date()) {
+    if (
+      new Date(payload.exp * 1000) < new Date() &&
+      !urlNotCatchExpired.includes(url)
+    ) {
       throw new UnauthorizedException(responseError(MessageCode.MSG_401_002))
     }
 
