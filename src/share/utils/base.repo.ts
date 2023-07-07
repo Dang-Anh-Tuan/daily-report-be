@@ -17,6 +17,10 @@ export default class BaseRepo<T extends BaseEntity> {
     return this.repository.save(data)
   }
 
+  async createMany(data: DeepPartial<T>[]): Promise<T[]> {
+    return this.repository.save(data)
+  }
+
   async update(condition: object, data: object): Promise<UpdateResult> {
     const c: object = { deletedAt: null, ...condition }
     return this.repository.update(c, data)

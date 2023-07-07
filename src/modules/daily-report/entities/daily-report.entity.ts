@@ -1,3 +1,4 @@
+import { Task } from '@modules/task/entities/task.entity'
 import { User } from '@modules/user/entities/user.entity'
 import {
   BaseEntity,
@@ -7,7 +8,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from 'typeorm'
 
 @Entity({ name: 'daily_report' })
@@ -29,4 +31,8 @@ export class DailyReport extends BaseEntity {
 
   @ManyToOne(() => User, (user) => user.dailyReports)
   user: User
+  
+  @OneToMany(() => Task, (task) => task.dailyReport)
+  tasks: Task[]
+  
 }

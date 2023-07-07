@@ -2,19 +2,21 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  DeleteDateColumn
+  UpdateDateColumn
 } from 'typeorm'
 import { TYPE_TASK } from '../interfaces/task.interface'
+import { DailyReport } from './../../daily-report/entities/daily-report.entity'
 
 @Entity({ name: 'task' })
 export class Task extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'varchar', nullable: false, unique: true })
+  @Column({ type: 'varchar', nullable: false })
   content!: string
 
   @Column({ type: 'int', nullable: false, default: 0 })
@@ -31,4 +33,7 @@ export class Task extends BaseEntity {
 
   @DeleteDateColumn()
   deletedAt?: Date
+
+  @ManyToOne(() => DailyReport, (dailyReport) => dailyReport.tasks)
+  dailyReport: DailyReport
 }

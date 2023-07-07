@@ -14,7 +14,7 @@ export class UserService {
 
   getUserByEmail(email: string, withDeletedAt = false) {
     const user = this.userRepo.findOne({ email: email }, withDeletedAt)
-    if(!user) {
+    if (!user) {
       throw new NotFoundException(
         responseError(MessageCode.MSG_404_002, {
           fieldName: 'User'
@@ -23,11 +23,13 @@ export class UserService {
     }
     return user
   }
-  
-
 
   getAll() {
     return this.userRepo.getList({})
+  }
+
+  getById(id) {
+    return this.userRepo.findOne({ id })
   }
 
   create(user: IUserCreate) {
@@ -40,9 +42,8 @@ export class UserService {
   ): Promise<void> {
     await this.userRepo.create({ id: userId, refreshToken })
   }
-  
-  async clearRefreshToken(userId: number,
-  ): Promise<void> {
+
+  async clearRefreshToken(userId: number): Promise<void> {
     await this.userRepo.create({ id: userId, refreshToken: null })
   }
 }
