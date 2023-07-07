@@ -6,7 +6,7 @@ import {
   UpdateResult
 } from 'typeorm'
 
-export default class BaseRepo<T extends BaseEntity> {
+export default class BaseRepo<T extends BaseEntity>{
   protected readonly repository: Repository<T>
 
   constructor(protected repo: Repository<T>) {

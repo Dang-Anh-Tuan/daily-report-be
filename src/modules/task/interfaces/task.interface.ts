@@ -7,9 +7,22 @@ export enum TYPE_TASK {
   ISSUE = 4
 }
 
+export interface TaskCreateRequest {
+  content: string
+  percent: number
+  type: TYPE_TASK
+  idReport: number
+}
+
 export interface TaskCreate {
   content: string
   percent: number
   type: TYPE_TASK
   dailyReport: DailyReport
+}
+
+export interface TaskCreateUpdate {
+  id: number
+  content: string
+  percent: number
 }

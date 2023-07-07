@@ -1,9 +1,9 @@
-import { MESSAGES, MessageCode } from '../constants/common.constants';
-import { formatStringObj } from './share-function';
+import { MESSAGES, MessageCode } from '../constants/common.constants'
+import { formatStringObj } from './share-function'
 
 export interface IResponse<T> {
-  message: string;
-  data?: T;
+  message: string
+  data?: T
 }
 
 /**
@@ -13,5 +13,5 @@ export interface IResponse<T> {
  * @returns
  */
 export function responseError(code: MessageCode, data?: object) {
-  return formatStringObj(MESSAGES[code], data);
+  return formatStringObj(MESSAGES[code], data)
 }

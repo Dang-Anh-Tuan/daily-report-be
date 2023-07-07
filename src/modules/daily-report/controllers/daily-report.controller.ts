@@ -21,7 +21,7 @@ export class DailyReportController {
     )
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('/update/:id')
   async updateDailyReport(
     @Param('id') idReport: number,

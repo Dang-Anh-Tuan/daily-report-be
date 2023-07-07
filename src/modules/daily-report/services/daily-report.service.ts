@@ -2,7 +2,12 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common'
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef
+} from '@nestjs/common'
 import { DailyReportRepo } from '../repositories/daily-report.repository'
 import { UserService } from '@modules/user/services/user.service'
 import {
@@ -14,12 +19,15 @@ import { DailyReport } from '../entities/daily-report.entity'
 import { TYPE_TASK, TaskCreate } from '@modules/task/interfaces/task.interface'
 import { TaskService } from '@modules/task/services/task.service'
 import { RequestReportUpdate } from '../interfaces/daily-report.interface'
+import { responseError } from '@share/utils/response-schema'
+import { MessageCode } from '@share/constants/common.constants'
 
 @Injectable()
 export class DailyReportService {
   constructor(
     private readonly dailyReportRepo: DailyReportRepo,
     private userService: UserService,
+    @Inject(forwardRef(() => TaskService))
     private taskService: TaskService
   ) {}
 
@@ -27,7 +35,23 @@ export class DailyReportService {
     const nearestDailyReport =
       await this.dailyReportRepo.getNearestDailyReportByUserId(idUser)
 
+    if (!nearestDailyReport) {
+      throw new NotFoundException(
+        responseError(MessageCode.MSG_404_002, {
+          fieldName: 'Daily Report'
+        })
+      )
+    }
+
     const currentUser = await this.userService.getById(idUser)
+
+    if (!currentUser) {
+      throw new NotFoundException(
+        responseError(MessageCode.MSG_404_002, {
+          fieldName: 'User'
+        })
+      )
+    }
 
     // *** Case 1: User don't have any daily report
     if (!nearestDailyReport) {
@@ -83,5 +107,9 @@ export class DailyReportService {
 
   async updateReport(data: RequestReportUpdate) {
     this.dailyReportRepo.create(data)
+  }
+
+  async getById(id: number) {
+    return await this.dailyReportRepo.findOne({ id })
   }
 }
