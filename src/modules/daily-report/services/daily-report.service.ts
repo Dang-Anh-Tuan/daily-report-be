@@ -21,6 +21,8 @@ import { TaskService } from '@modules/task/services/task.service'
 import { RequestReportUpdate } from '../interfaces/daily-report.interface'
 import { responseError } from '@share/utils/response-schema'
 import { MessageCode } from '@share/constants/common.constants'
+import { User } from '@modules/user/entities/user.entity'
+import { Task } from '@modules/task/entities/task.entity'
 
 @Injectable()
 export class DailyReportService {
@@ -30,6 +32,64 @@ export class DailyReportService {
     @Inject(forwardRef(() => TaskService))
     private taskService: TaskService
   ) {}
+
+  getNewPlanTaskFromOldReport(nearestDailyReport: DailyReport) {
+    return nearestDailyReport.tasks.filter(
+      (task) =>
+        [TYPE_TASK.NEXT_DAY_PLAN, TYPE_TASK.ISSUE].includes(task.type) ||
+        (TYPE_TASK.ACTUAL === task.type && task.percent !== 100)
+    )
+  }
+
+  getPlanTaskNotRepeatContent(
+    taskTodayPlan: Task[],
+    newDailyReport: DailyReport
+  ) {
+    const taskMap: { [content: string]: TaskCreate } = {}
+
+    for (const task of taskTodayPlan) {
+      const { content, percent, type } = task
+
+      if (!(content in taskMap)) {
+        taskMap[content] = {
+          content,
+          percent,
+          type: TYPE_TASK.TODAY_PLAN,
+          dailyReport: newDailyReport
+        }
+      }
+      if (type === TYPE_TASK.ACTUAL) {
+        taskMap[content].percent = percent
+      }
+    }
+
+    return Object.values(taskMap)
+  }
+
+  async createNewReportFromOldReport(
+    currentUser: User,
+    nearestDailyReport: DailyReport
+  ) {
+    // *** header same nearestDailyReport
+    // *** nearestDailyReport's next day plan become newDailyReport's today plan
+    // *** nearestDailyReport's actual not in nearestDailyReport's next day plan if percent not equal 100 => newDailyReport's today plan
+    // *** nearestDailyReport's actual not in nearestDailyReport's next day plan if percent not equal 100 => newDailyReport's today actual and hold percent
+    const newDailyReportData = {
+      heading: generateHeaderDefault(currentUser.email, new Date()),
+      user: currentUser
+    }
+
+    const newDailyReport = await this.dailyReportRepo.create(newDailyReportData)
+
+    const taskTodayPlan = this.getNewPlanTaskFromOldReport(nearestDailyReport)
+
+    const convertedTasks: TaskCreate[] = this.getPlanTaskNotRepeatContent(
+      taskTodayPlan,
+      newDailyReport
+    )
+
+    await this.taskService.createTask(convertedTasks)
+  }
 
   async getCurrentDailyReport(idUser: number) {
     const nearestDailyReport =
@@ -68,34 +128,7 @@ export class DailyReportService {
       nearestDailyReport &&
       convertDate(nearestDailyReport.createdAt) !== convertDate(new Date())
     ) {
-      // *** header same nearestDailyReport
-      // *** nearestDailyReport's next day plan become newDailyReport's today plan
-      // *** nearestDailyReport's actual not in nearestDailyReport's next day plan if percent not equal 100 => newDailyReport's today plan
-      // *** nearestDailyReport's actual not in nearestDailyReport's next day plan if percent not equal 100 => newDailyReport's today actual and hold percent
-      const newDailyReportData = {
-        heading: generateHeaderDefault(currentUser.email, new Date()),
-        user: currentUser
-      }
-
-      const taskTodayPlan = nearestDailyReport.tasks.filter(
-        (task) =>
-          [TYPE_TASK.NEXT_DAY_PLAN, TYPE_TASK.ISSUE].includes(task.type) ||
-          (TYPE_TASK.ACTUAL === task.type && task.percent !== 100)
-      )
-      const newDailyReport = await this.dailyReportRepo.create(
-        newDailyReportData
-      )
-
-      const convertedTasks: TaskCreate[] = taskTodayPlan.map((task) => {
-        return {
-          content: task.content,
-          percent: task.percent,
-          type: TYPE_TASK.TODAY_PLAN,
-          dailyReport: newDailyReport
-        }
-      })
-
-      await this.taskService.createTask(convertedTasks)
+      await this.createNewReportFromOldReport(currentUser, nearestDailyReport)
 
       return convertDailyReportToResp(
         await this.dailyReportRepo.getNearestDailyReportByUserId(idUser)
