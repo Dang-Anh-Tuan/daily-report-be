@@ -95,14 +95,6 @@ export class DailyReportService {
     const nearestDailyReport =
       await this.dailyReportRepo.getNearestDailyReportByUserId(idUser)
 
-    if (!nearestDailyReport) {
-      throw new NotFoundException(
-        responseError(MessageCode.MSG_404_002, {
-          fieldName: 'Daily Report'
-        })
-      )
-    }
-
     const currentUser = await this.userService.getById(idUser)
 
     if (!currentUser) {
