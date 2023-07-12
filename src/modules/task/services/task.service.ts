@@ -46,4 +46,8 @@ export class TaskService {
   async updateTask(task: TaskCreateUpdate) {
     return await this.taskRepo.create(task)
   }
+  
+  async deleteTask(id: number ) {
+    return await this.taskRepo.delete({id})
+  }
 }

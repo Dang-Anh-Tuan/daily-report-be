@@ -6,7 +6,7 @@ import {
   UpdateResult
 } from 'typeorm'
 
-export default class BaseRepo<T extends BaseEntity>{
+export default class BaseRepo<T extends BaseEntity> {
   protected readonly repository: Repository<T>
 
   constructor(protected repo: Repository<T>) {
@@ -27,7 +27,7 @@ export default class BaseRepo<T extends BaseEntity>{
   }
 
   async delete(condition: object): Promise<DeleteResult> {
-    const c: object = { deletedAt: null, ...condition }
+    const c: object = { ...condition }
     return this.repository.delete(c)
   }
 
