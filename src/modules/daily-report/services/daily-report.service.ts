@@ -48,12 +48,13 @@ export class DailyReportService {
     const taskMap: { [content: string]: TaskCreate } = {}
 
     for (const task of taskTodayPlan) {
-      const { content, percent, type } = task
+      const { content, percent, type, link } = task
 
       if (!(content in taskMap)) {
         taskMap[content] = {
           content,
           percent,
+          link,
           type: TYPE_TASK.TODAY_PLAN,
           dailyReport: newDailyReport
         }
@@ -131,7 +132,7 @@ export class DailyReportService {
   }
 
   async updateReport(data: RequestReportUpdate) {
-    this.dailyReportRepo.create(data)
+    return this.dailyReportRepo.create(data)
   }
 
   async getById(id: number) {

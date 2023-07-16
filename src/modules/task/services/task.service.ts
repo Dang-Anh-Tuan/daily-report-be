@@ -39,6 +39,7 @@ export class TaskService {
       content: task.content,
       percent: task.percent,
       type: task.type,
+      link: task.link,
       dailyReport: currentReport
     })
   }

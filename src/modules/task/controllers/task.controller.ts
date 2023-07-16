@@ -21,14 +21,14 @@ export class TaskController {
   constructor(private taskService: TaskService) {}
   @UseGuards(JwtAuthGuard)
   @Post()
-  createTask(@Body() body: TaskCreateSingle) {
-    this.taskService.createTaskSingle(body)
+  async createTask(@Body() body: TaskCreateSingle) {
+    return await this.taskService.createTaskSingle(body)
   }
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  updateTask(@Body() body: TaskCreateUpdate) {
-    this.taskService.updateTask(body)
+  async updateTask(@Body() body: TaskCreateUpdate) {
+    return await this.taskService.updateTask(body)
   }
 
   @UseGuards(JwtAuthGuard)

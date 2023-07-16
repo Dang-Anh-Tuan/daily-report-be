@@ -18,6 +18,9 @@ export class Task extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: false })
   content!: string
+  
+  @Column({ type: 'varchar', nullable: true })
+  link: string
 
   @Column({ type: 'int', nullable: false, default: 0 })
   percent: number
